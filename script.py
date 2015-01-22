@@ -166,29 +166,19 @@ def magicBricks():
 	# GETTING THE INITIAL VALUE
 	properties = browser.find_by_css(COUNT).value
 
-	# def WaitAndLoad():
-	# 	# WAITING TO LOAD
-	# 	while properties == browser.find_by_css(COUNT).value:
-	# 		pass
-	# 	properties = browser.find_by_css(COUNT).value
-
 	# BEDROOMS
 	if BEDROOM:
 		browser.find_by_xpath(BEDROOM_XPATH).click()
 		browser.find_by_xpath(GetBedroomXPath(BEDROOM_NO)).check()
-		# WaitAndLoad()
 
 	# POSTED BY
 	browser.find_by_xpath(POSTED_BY_XPATH).click()
 	if OWNER:
-		browser.find_by_xpath(OWNER_XPATH).click()
-		# WaitAndLoad()		
+		browser.find_by_xpath(OWNER_XPATH).click()	
 	elif BUILDER:
 		browser.find_by_xpath(BUILDER_XPATH).click()
-		# WaitAndLoad()
 	elif DEALER:
 		browser.find_by_xpath(DEALER_XPATH).click()
-		# WaitAndLoad()
 
 	# PUT TO SLEEP
 	sleep(2)
