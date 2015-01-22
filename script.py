@@ -16,7 +16,7 @@ DEALER = False
 BEDROOM = True
 BEDROOM_NO = 2
 
-def acres(website):
+def acres():
 
 	# WEBSITE
 	WEBSITE = 'http://www.99acres.com'
@@ -192,5 +192,5 @@ def magicBricks():
 	# BROWSER QUIT
 	browser.quit()
 
-# acres()
-magicBricks()
+acres()
+# magicBricks()
