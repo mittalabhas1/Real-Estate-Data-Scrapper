@@ -1,8 +1,6 @@
 from splinter import Browser
 from time import sleep
 
-browser = Browser()
-
 # KEYWORD
 CITY = 'Bangalore'
 LOCALITY = '(All)'
@@ -49,6 +47,7 @@ def acres():
 	COUNT = 'input#PROP_COUNT'
 
 	# VISIT WEBSITE
+	browser = Browser()
 	browser.visit(WEBSITE)
 
 	# BUY OR RENT
@@ -133,6 +132,7 @@ def magicBricks():
 	COUNT = '#resultDiv > div.srpTabAndSort > div.srpTabs > ul > li:nth-child(1) > a > span'
 
 	# VISIT WEBSITE
+	browser = Browser()
 	browser.visit(WEBSITE)
 
 	# BUY OR RENT
@@ -192,5 +192,5 @@ def magicBricks():
 	# BROWSER QUIT
 	browser.quit()
 
-acres()
+# acres()
 # magicBricks()
