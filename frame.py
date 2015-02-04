@@ -1,10 +1,16 @@
 import wx
 import os
+import csv
+from script import acres,magicBricks
 
 class mainFrame(wx.Frame):
 	def __init__(self,parent,title):
-		wx.Frame.__init__(self,parent,title=title,size=(200,100))
-		self.control = wx.TextCtrl(self,style=wx.TE_MULTILINE)
+		#Global variables
+		self.dirname = os.getcwd()
+		self.filename = ""
+
+		wx.Frame.__init__(self,parent,title=title,size=(300,100))
+		#self.control = wx.TextCtrl(self)#,style=wx.TE_MULTILINE)
 		self.CreateStatusBar()
 		filemenu = wx.Menu()
 		menu_about = filemenu.Append(wx.ID_ABOUT, "&About"," Information about this program")
@@ -17,6 +23,16 @@ class mainFrame(wx.Frame):
 		menuBar = wx.MenuBar()
 		menuBar.Append(filemenu,"&File") # Adding the "filemenu" to the MenuBar
 		self.SetMenuBar(menuBar)  # Adding the MenuBar to the Frame content.
+		#Panel 
+		panel = wx.Panel(self,size=(200,50))
+		#self.quote = wx.StaticText(panel, label="File")
+		self.openButton =wx.Button(panel, wx.ID_OPEN, "Open")
+		self.Bind(wx.EVT_BUTTON, self.OnOpen,self.openButton)
+		self.openButton.SetDefault()
+
+		self.startButton = wx.Button(panel, wx.ID_FILE, "Start", pos=(100,0))
+		self.Bind(wx.EVT_BUTTON, self.OnStart, self.startButton)
+
 		self.Show(True)
 		
 	def OnAbout(self,e):
@@ -29,14 +45,54 @@ class mainFrame(wx.Frame):
 		self.Close(True)
 		
 	def OnOpen(self,e):
-		self.dirname = os.getcwd()
-		self.filename = ""
 		dlg = wx.FileDialog(self, "Choose a file to open", self.dirname,self.filename, "*.*", wx.OPEN)
 		if dlg.ShowModal() == wx.ID_OK:
 			self.filename = dlg.GetFilename()
 			self.dirname = dlg.GetDirectory()
 		dlg.Destroy()
-	    
+
+	def OnStart(self,e):
+		if self.filename == "":
+			dlg = wx.MessageDialog(self,"Please choose a file","Choose a file for scraping",wx.OK)
+			dlg.ShowModal() # Show it
+			dlg.Destroy() # finally destroy it when finished.
+		else:
+			print self.dirname+'/'+self.filename
+			readfile = open(self.dirname+'/'+self.filename,'rb')
+			writefile = open(self.dirname+'/'+self.filename[:-4]+'result.csv','wb')
+			fread = csv.reader(readfile)
+			fwrite = csv.writer(writefile)
+			for row in fread:
+				BUY = False
+				RENT = False
+				OWNER = False
+				BUILDER = False
+				DEALER = False
+				BEDROOM = False
+				BEDROOM_NO = 0
+				CITY = ''
+				LOCALITY = ''
+				if row[0].lower() == 'buy':
+					BUY = True
+				else:
+					RENT = True
+				if row[4].lower() == 'owner':
+					OWNER = True
+				elif row[4].lower() == 'builder':
+					BUILDER = True
+				else:
+					DEALER = True
+				if int(row[3]) != 0 or int(row[3]) != '':
+					BEDROOM = True
+					BEDROOM_NO = row[3]
+				
+				CITY = row[1]
+				LOCALITY = row[2]
+				ac = acres()
+				#mb = magicBricks()
+				fwrite.writerow(row+[ac])
+				dlg = wx.MessageDialog(self,"Download Completed! Please check the results in "+ self.filename[:-4]+'result.csv',"Results",wx.OK)
+				dlg.ShowModal()
 
 
 app=wx.App(False)

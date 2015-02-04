@@ -83,11 +83,11 @@ def acres():
 	# GETTING THE VALUE
 	properties = browser.find_by_css(COUNT).value
 
-	# PRINTING VALUE
-	print properties
-
 	# BROWSER QUIT
 	browser.quit()
+
+	# RETURN VALUE
+	return properties
 
 def magicBricks():
 
@@ -186,11 +186,12 @@ def magicBricks():
 	# GETTING THE VALUE
 	properties = browser.find_by_css(COUNT).value
 
-	# PRINTING VALUE
-	print properties
 
 	# BROWSER QUIT
 	browser.quit()
+
+	# RETURN VALUE
+	return properties
 
 # acres()
 # magicBricks()
