@@ -1,4 +1,4 @@
-import wx, os, csv
+import wx, os, csv, time
 from script import *
 
 class mainFrame(wx.Frame):
@@ -9,9 +9,8 @@ class mainFrame(wx.Frame):
 		self.dirname = os.getcwd()
 		self.filename = ""
 
-		wx.Frame.__init__(self,parent,title=title,size=(300,100))
-		#self.control = wx.TextCtrl(self)#,style=wx.TE_MULTILINE)
-
+		wx.Frame.__init__(self,parent,title=title,size=(600,150))
+		
 		self.CreateStatusBar()
 		filemenu = wx.Menu()
 
@@ -23,50 +22,56 @@ class mainFrame(wx.Frame):
 
 		filemenu.AppendSeparator()
 		menu_exit = filemenu.Append(wx.ID_EXIT,"&Exit"," Terminate the program")
-
 		self.Bind(wx.EVT_MENU,self.OnExit, menu_exit)
+
 		menuBar = wx.MenuBar()
-		menuBar.Append(filemenu,"&File") # Adding the "filemenu" to the MenuBar
-		self.SetMenuBar(menuBar)  # Adding the MenuBar to the Frame content.
+		# Adding the "filemenu" to the MenuBar
+		menuBar.Append(filemenu,"&File")
+		# Adding the MenuBar to the Frame content.
+		self.SetMenuBar(menuBar)
 
 		#Panel 
-		panel = wx.Panel(self,size=(200,50))
-		#self.quote = wx.StaticText(panel, label="File")
+		panel = wx.Panel(self,size=(600,100))
 
-		self.openButton =wx.Button(panel, wx.ID_OPEN, "Open")
+		self.filepath = wx.StaticText(panel, label="Choose a file", pos=(40,50))
+		self.openButton =wx.Button(panel, wx.ID_OPEN, "Open File", pos=(300,45))
 		self.Bind(wx.EVT_BUTTON, self.OnOpen,self.openButton)
 		self.openButton.SetDefault()
 
-		self.startButton = wx.Button(panel, wx.ID_FILE, "Start", pos=(100,0))
+		self.startButton = wx.Button(panel, wx.ID_FILE, "Run Parity Generator", pos=(400,45))
 		self.Bind(wx.EVT_BUTTON, self.OnStart, self.startButton)
 
 		self.Show(True)
 		
 	def OnAbout(self,e):
         # A message dialog box with an OK button. wx.OK is a standard ID in wxWidgets.
-		dlg = wx.MessageDialog(self,"Real Estate Dat Scrapper","Information about this",wx.OK)
-		dlg.ShowModal() # Show it
-		dlg.Destroy() # finally destroy it when finished.
-        
+		dlg = wx.MessageDialog(self,"Real Estate Parity Generator", "About", wx.OK)
+		# Show it
+		dlg.ShowModal()
+		# finally destroy it when finished.
+		dlg.Destroy()
+
 	def OnExit(self,e):
 		self.Close(True)
-		
+
 	def OnOpen(self,e):
-		dlg = wx.FileDialog(self, "Choose a file to open", self.dirname,self.filename, "*.*", wx.OPEN)
+		dlg = wx.FileDialog(self, "Choose a CSV file to run parity", self.dirname,self.filename, "*.*", wx.OPEN)
 		if dlg.ShowModal() == wx.ID_OK:
 			self.filename = dlg.GetFilename()
 			self.dirname = dlg.GetDirectory()
+			self.filepath.SetLabel("File: "+self.filename)
 		dlg.Destroy()
 
 	def OnStart(self,e):
 		if self.filename == "":
-			dlg = wx.MessageDialog(self,"Please choose a file","Choose a file for scraping",wx.OK)
+			dlg = wx.MessageDialog(self,"Please choose a valid CSV file to continue","Error",wx.OK)
 			dlg.ShowModal() # Show it
 			dlg.Destroy() # finally destroy it when finished.
 		else:
 			print self.dirname+'/'+self.filename
+			localtime = time.asctime(time.localtime(time.time()))
 			readfile = open(self.dirname+'/'+self.filename,'rb')
-			writefile = open(self.dirname+'/'+self.filename[:-4]+'result.csv','wb')
+			writefile = open(self.dirname+'/'+localtime+'.csv','wb')
 			fread = csv.reader(readfile)
 			fwrite = csv.writer(writefile)
 			for row in fread:
@@ -92,7 +97,7 @@ class mainFrame(wx.Frame):
 				BROWSER.quit()
 
 				fwrite.writerow(row+[ac]+[mb])
-				dlg = wx.MessageDialog(self,"Download Completed! Please check the results in "+ self.filename[:-4]+'result.csv',"Results",wx.OK)
+				dlg = wx.MessageDialog(self,"Please check the results in "+ localtime+'.csv',"Download Completed!",wx.OK)
 				dlg.ShowModal()
 
 
