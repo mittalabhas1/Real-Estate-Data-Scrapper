@@ -42,7 +42,7 @@ class mainFrame(wx.Frame):
 		self.Bind(wx.EVT_BUTTON, self.OnStart, self.startButton)
 
 		#Progress Bar
-		self.proressbar = wx.Gauge(panel,wx.ID_STATIC,size=(600,30),pos=(0,100))
+		self.progressbar = wx.Gauge(panel,wx.ID_STATIC,size=(500,30),pos=(50,100))
 
 		self.Show(True)
 		
@@ -65,8 +65,8 @@ class mainFrame(wx.Frame):
 			self.filepath.SetLabel("File: "+self.filename)
 		dlg.Destroy()
 		row_count = sum(1 for row in csv.reader(open(self.dirname+'/'+self.filename)))
-		self.proressbar.SetValue(0)
-		self.proressbar.SetRange(row_count)
+		self.progressbar.SetValue(0)
+		self.progressbar.SetRange(row_count)
 
 	def OnStart(self,e):
 		if self.filename == "":
@@ -104,7 +104,7 @@ class mainFrame(wx.Frame):
 
 				fwrite.writerow(row+[ac]+[mb])
 
-				self.proressbar.SetValue(val+1) #Update the progress bar
+				self.progressbar.SetValue(val+1) #Update the progress bar
 				val += 1
 			
 			BROWSER.quit()
