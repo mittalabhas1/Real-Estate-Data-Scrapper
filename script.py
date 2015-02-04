@@ -1,7 +1,7 @@
 from splinter import Browser
 from time import sleep
 
-def acres(type, city, locality, posted_by, bedrooms):
+def acres(browser, type, city, locality, posted_by, bedrooms):
 
 	# WEBSITE
 	WEBSITE = 'http://www.99acres.com'
@@ -34,7 +34,6 @@ def acres(type, city, locality, posted_by, bedrooms):
 	COUNT = 'input#PROP_COUNT'
 
 	# VISIT WEBSITE
-	browser = Browser()
 	browser.visit(WEBSITE)
 
 	# BUY OR RENT
@@ -46,11 +45,8 @@ def acres(type, city, locality, posted_by, bedrooms):
 	# FILING KEYWORD
 	browser.fill(KEYWORD_KEY, KEYWORD)
 
-	print not (not bedrooms)
-
 	# BEDROOMS
 	if not (not bedrooms):
-		print bedrooms
 		browser.find_by_xpath(BEDROOM_XPATH).click()
 		browser.find_by_xpath(GetBedroomXPath(int(bedrooms))).click()
 
@@ -73,20 +69,17 @@ def acres(type, city, locality, posted_by, bedrooms):
 	# GETTING THE VALUE
 	properties = browser.find_by_css(COUNT).value
 
-	# BROWSER QUIT
-	browser.quit()
-
 	# RETURN VALUE
-	return properties
+	return int(properties)
 
-def magicBricks():
+def magicBricks(browser, type, city, locality, posted_by, bedrooms):
 
 	# WEBSITE
 	WEBSITE = 'http://www.magicbricks.com'
 
 	# KEYWORD
 	KEYWORD_KEY = 'keyword'
-	KEYWORD = CITY
+	KEYWORD = city
 
 	# XPATHS
 	def GetBedroomXPath(bedrooms):
@@ -122,25 +115,24 @@ def magicBricks():
 	COUNT = '#resultDiv > div.srpTabAndSort > div.srpTabs > ul > li:nth-child(1) > a > span'
 
 	# VISIT WEBSITE
-	browser = Browser()
 	browser.visit(WEBSITE)
 
 	# BUY OR RENT
-	if BUY:
+	if type == 'buy':
 		browser.find_by_xpath(BUY_XPATH).click()
-	elif RENT:
+	elif type == 'rent':
 		browser.find_by_xpath(RENT_XPATH).click()
 
 	# FILING KEYWORD
 	browser.fill(KEYWORD_KEY, KEYWORD)
 
 	# PROPERTY TYPE
-	if BUY:
+	if type == 'buy':
 		browser.find_by_xpath(BUY_PROPERTY_XPATH).click()
 		browser.find_by_xpath(BUY_FLAT_XPATH).check()
 		browser.find_by_xpath(BUY_HOUSE_XPATH).check()
 		browser.find_by_xpath(BUY_PLOT_XPATH).check()
-	elif RENT:
+	elif type == 'rent':
 		browser.find_by_xpath(RENT_PROPERTY_XPATH).click()
 		browser.find_by_xpath(RENT_FLAT_XPATH).check()
 		browser.find_by_xpath(RENT_HOUSE_XPATH).check()
@@ -157,31 +149,24 @@ def magicBricks():
 	properties = browser.find_by_css(COUNT).value
 
 	# BEDROOMS
-	if BEDROOM:
+	if not not bedrooms:
 		browser.find_by_xpath(BEDROOM_XPATH).click()
-		browser.find_by_xpath(GetBedroomXPath(BEDROOM_NO)).check()
+		browser.find_by_xpath(GetBedroomXPath(int(bedrooms))).check()
 
 	# POSTED BY
 	browser.find_by_xpath(POSTED_BY_XPATH).click()
-	if OWNER:
+	if posted_by == 'owner':
 		browser.find_by_xpath(OWNER_XPATH).click()	
-	elif BUILDER:
+	elif posted_by == 'builder':
 		browser.find_by_xpath(BUILDER_XPATH).click()
-	elif DEALER:
+	elif posted_by == 'dealer':
 		browser.find_by_xpath(DEALER_XPATH).click()
 
 	# PUT TO SLEEP
 	sleep(2)
 
 	# GETTING THE VALUE
-	properties = browser.find_by_css(COUNT).value
-
-
-	# BROWSER QUIT
-	browser.quit()
+	properties = browser.find_by_css(COUNT).value[1:-1]
 
 	# RETURN VALUE
-	return properties
-
-# acres()
-# magicBricks()
+	return int(properties)

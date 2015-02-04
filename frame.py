@@ -86,10 +86,12 @@ class mainFrame(wx.Frame):
 				POSTED_BY = row[4].lower()
 				BEDROOMS = check_bedroom(row[3])
 
-				ac = acres(TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
-				#mb = magicBricks()
+				BROWSER = Browser()
+				ac = acres(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
+				mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
+				BROWSER.quit()
 
-				fwrite.writerow(row+[ac])
+				fwrite.writerow(row+[ac]+[mb])
 				dlg = wx.MessageDialog(self,"Download Completed! Please check the results in "+ self.filename[:-4]+'result.csv',"Results",wx.OK)
 				dlg.ShowModal()
 
