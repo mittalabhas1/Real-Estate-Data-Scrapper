@@ -11,7 +11,7 @@ class mainFrame(wx.Frame):
 
 		wx.Frame.__init__(self,parent,title=title,size=(600,150))
 		
-		self.CreateStatusBar()
+		# self.CreateStatusBar()
 		filemenu = wx.Menu()
 
 		menu_about = filemenu.Append(wx.ID_ABOUT, "&About"," Information about this program")
@@ -41,6 +41,9 @@ class mainFrame(wx.Frame):
 		self.startButton = wx.Button(panel, wx.ID_FILE, "Run Parity Generator", pos=(400,45))
 		self.Bind(wx.EVT_BUTTON, self.OnStart, self.startButton)
 
+		#Progress Bar
+		self.proressbar = wx.Gauge(panel,wx.ID_STATIC,size=(600,30),pos=(0,100))
+
 		self.Show(True)
 		
 	def OnAbout(self,e):
@@ -61,6 +64,9 @@ class mainFrame(wx.Frame):
 			self.dirname = dlg.GetDirectory()
 			self.filepath.SetLabel("File: "+self.filename)
 		dlg.Destroy()
+		row_count = sum(1 for row in csv.reader(open(self.dirname+'/'+self.filename)))
+		self.proressbar.SetValue(0)
+		self.proressbar.SetRange(row_count)
 
 	def OnStart(self,e):
 		if self.filename == "":
@@ -74,6 +80,8 @@ class mainFrame(wx.Frame):
 			writefile = open(self.dirname+'/'+localtime+'.csv','wb')
 			fread = csv.reader(readfile)
 			fwrite = csv.writer(writefile)
+			BROWSER = Browser()
+			val=0 #value for progress bar
 			for row in fread:
 
 				def check_bedroom(bedrooms):
@@ -90,16 +98,20 @@ class mainFrame(wx.Frame):
 				LOCALITY = row[2]
 				POSTED_BY = row[4].lower()
 				BEDROOMS = check_bedroom(row[3])
-
-				BROWSER = Browser()
+				
 				ac = acres(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
 				mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
-				BROWSER.quit()
 
 				fwrite.writerow(row+[ac]+[mb])
-				dlg = wx.MessageDialog(self,"Please check the results in "+ localtime+'.csv',"Download Completed!",wx.OK)
-				dlg.ShowModal()
 
+				self.proressbar.SetValue(val+1) #Update the progress bar
+				val += 1
+			
+			BROWSER.quit()
+
+			dlg = wx.MessageDialog(self,"Please check the results in "+ localtime+'.csv',"Download Completed!",wx.OK)
+			dlg.ShowModal()
+			dlg.Destroy()
 
 app=wx.App(False)
 frame = mainFrame(None,"Real Estate Data Scrapper")
