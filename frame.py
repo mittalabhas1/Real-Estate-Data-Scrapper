@@ -1,31 +1,38 @@
-import wx
-import os
-import csv
-from script import acres,magicBricks
+import wx, os, csv
+from script import *
 
 class mainFrame(wx.Frame):
+
 	def __init__(self,parent,title):
+
 		#Global variables
 		self.dirname = os.getcwd()
 		self.filename = ""
 
 		wx.Frame.__init__(self,parent,title=title,size=(300,100))
 		#self.control = wx.TextCtrl(self)#,style=wx.TE_MULTILINE)
+
 		self.CreateStatusBar()
 		filemenu = wx.Menu()
+
 		menu_about = filemenu.Append(wx.ID_ABOUT, "&About"," Information about this program")
 		self.Bind(wx.EVT_MENU, self.OnAbout, menu_about)
+
 		menu_open = filemenu.Append(wx.ID_OPEN, "&Open File","Open a new file")
 		self.Bind(wx.EVT_MENU, self.OnOpen, menu_open)
+
 		filemenu.AppendSeparator()
 		menu_exit = filemenu.Append(wx.ID_EXIT,"&Exit"," Terminate the program")
+
 		self.Bind(wx.EVT_MENU,self.OnExit, menu_exit)
 		menuBar = wx.MenuBar()
 		menuBar.Append(filemenu,"&File") # Adding the "filemenu" to the MenuBar
 		self.SetMenuBar(menuBar)  # Adding the MenuBar to the Frame content.
+
 		#Panel 
 		panel = wx.Panel(self,size=(200,50))
 		#self.quote = wx.StaticText(panel, label="File")
+
 		self.openButton =wx.Button(panel, wx.ID_OPEN, "Open")
 		self.Bind(wx.EVT_BUTTON, self.OnOpen,self.openButton)
 		self.openButton.SetDefault()
@@ -63,33 +70,25 @@ class mainFrame(wx.Frame):
 			fread = csv.reader(readfile)
 			fwrite = csv.writer(writefile)
 			for row in fread:
-				BUY = False
-				RENT = False
-				OWNER = False
-				BUILDER = False
-				DEALER = False
-				BEDROOM = False
-				BEDROOM_NO = 0
-				CITY = ''
-				LOCALITY = ''
-				if row[0].lower() == 'buy':
-					BUY = True
-				else:
-					RENT = True
-				if row[4].lower() == 'owner':
-					OWNER = True
-				elif row[4].lower() == 'builder':
-					BUILDER = True
-				else:
-					DEALER = True
-				if int(row[3]) != 0 or int(row[3]) != '':
-					BEDROOM = True
-					BEDROOM_NO = row[3]
-				
+
+				def check_bedroom(bedrooms):
+					if bedrooms != '':
+						if int(bedrooms) > 0:
+							return int(bedrooms)
+						else:
+							return False
+					else:
+						return False
+
+				TYPE = row[0].lower()
 				CITY = row[1]
 				LOCALITY = row[2]
-				ac = acres()
+				POSTED_BY = row[4].lower()
+				BEDROOMS = check_bedroom(row[3])
+
+				ac = acres(TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
 				#mb = magicBricks()
+
 				fwrite.writerow(row+[ac])
 				dlg = wx.MessageDialog(self,"Download Completed! Please check the results in "+ self.filename[:-4]+'result.csv',"Results",wx.OK)
 				dlg.ShowModal()

@@ -1,35 +1,22 @@
 from splinter import Browser
 from time import sleep
 
-# KEYWORD
-CITY = 'Bangalore'
-LOCALITY = '(All)'
-
-# VARIABLES
-BUY = False
-RENT = True
-OWNER = True
-BUILDER = False
-DEALER = False
-BEDROOM = True
-BEDROOM_NO = 2
-
-def acres():
+def acres(type, city, locality, posted_by, bedrooms):
 
 	# WEBSITE
 	WEBSITE = 'http://www.99acres.com'
 
 	# KEYWORD
 	KEYWORD_KEY = 'keyword'
-	KEYWORD = CITY+' '+LOCALITY
+	KEYWORD = city+' '+locality
 
 	# XPATHS
-	def GetBedroomXPath(bedrooms):
-		if bedrooms < 1 or not isinstance(bedrooms, int):
+	def GetBedroomXPath(bedroom_no):
+		if bedroom_no < 1 or not isinstance(bedroom_no, int):
 			return '//*[@id="s_bedroom_num"]/div/div[2]/div/div/a[1]'
-		if bedrooms > 9:
-			bedrooms = 10
-		return '//*[@id="bd_'+str(bedrooms)+'"]'
+		if bedroom_no > 9:
+			bedroom_no = 10
+		return '//*[@id="bd_'+str(bedroom_no)+'"]'
 
 	BUY_XPATH = '//*[@id="ResBuyTab"]'
 	RENT_XPATH = '//*[@id="ResRentTab"]'
@@ -51,26 +38,29 @@ def acres():
 	browser.visit(WEBSITE)
 
 	# BUY OR RENT
-	if BUY:
+	if type == 'buy':
 		browser.find_by_xpath(BUY_XPATH).click()
-	elif RENT:
+	elif type == 'rent':
 		browser.find_by_xpath(RENT_XPATH).click()
 
 	# FILING KEYWORD
 	browser.fill(KEYWORD_KEY, KEYWORD)
 
+	print not (not bedrooms)
+
 	# BEDROOMS
-	if BEDROOM:
+	if not (not bedrooms):
+		print bedrooms
 		browser.find_by_xpath(BEDROOM_XPATH).click()
-		browser.find_by_xpath(GetBedroomXPath(BEDROOM_NO)).click()
+		browser.find_by_xpath(GetBedroomXPath(int(bedrooms))).click()
 
 	# POSTED BY
 	browser.find_by_xpath(POSTED_BY_XPATH).click()
-	if OWNER:
+	if posted_by == 'owner':
 		browser.find_by_xpath(OWNER_XPATH).click()
-	elif BUILDER:
+	elif posted_by == 'builder':
 		browser.find_by_xpath(BUILDER_XPATH).click()
-	elif DEALER:
+	elif posted_by == 'dealer':
 		browser.find_by_xpath(DEALER_XPATH).click()
 	
 	# SUBMIT
