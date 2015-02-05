@@ -1,4 +1,5 @@
 import wx, os, csv, time
+from build import *
 from script import *
 
 class mainFrame(wx.Frame):
@@ -10,9 +11,11 @@ class mainFrame(wx.Frame):
 		self.filename = ""
 
 		wx.Frame.__init__(self,parent,title=title,size=(600,200))
+
+		LATEST_BUILD_VERSION = getBuildVersion()
 		
 		self.CreateStatusBar()
-		self.SetStatusText('v0.1')
+		self.SetStatusText("Current version: v0.1. "+LATEST_BUILD_VERSION+" available to download!")
 		filemenu = wx.Menu()
 
 		menu_about = filemenu.Append(wx.ID_ABOUT, "&About","About")
