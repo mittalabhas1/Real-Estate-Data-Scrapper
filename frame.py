@@ -9,19 +9,20 @@ class mainFrame(wx.Frame):
 		self.dirname = os.getcwd()
 		self.filename = ""
 
-		wx.Frame.__init__(self,parent,title=title,size=(600,150))
+		wx.Frame.__init__(self,parent,title=title,size=(600,200))
 		
-		# self.CreateStatusBar()
+		self.CreateStatusBar()
+		self.SetStatusText('v0.1')
 		filemenu = wx.Menu()
 
-		menu_about = filemenu.Append(wx.ID_ABOUT, "&About"," Information about this program")
+		menu_about = filemenu.Append(wx.ID_ABOUT, "&About","About")
 		self.Bind(wx.EVT_MENU, self.OnAbout, menu_about)
 
-		menu_open = filemenu.Append(wx.ID_OPEN, "&Open File","Open a new file")
+		menu_open = filemenu.Append(wx.ID_OPEN, "&Open File","Open File")
 		self.Bind(wx.EVT_MENU, self.OnOpen, menu_open)
 
 		filemenu.AppendSeparator()
-		menu_exit = filemenu.Append(wx.ID_EXIT,"&Exit"," Terminate the program")
+		menu_exit = filemenu.Append(wx.ID_EXIT,"&Exit"," Exit")
 		self.Bind(wx.EVT_MENU,self.OnExit, menu_exit)
 
 		menuBar = wx.MenuBar()
@@ -31,9 +32,10 @@ class mainFrame(wx.Frame):
 		self.SetMenuBar(menuBar)
 
 		#Panel 
-		panel = wx.Panel(self,size=(600,100))
+		panel = wx.Panel(self,size=(600,150))
 
 		self.filepath = wx.StaticText(panel, label="Choose a file", pos=(40,50))
+
 		self.openButton =wx.Button(panel, wx.ID_OPEN, "Open File", pos=(300,45))
 		self.Bind(wx.EVT_BUTTON, self.OnOpen,self.openButton)
 		self.openButton.SetDefault()
@@ -109,10 +111,10 @@ class mainFrame(wx.Frame):
 			
 			BROWSER.quit()
 
-			dlg = wx.MessageDialog(self,"Please check the results in "+ localtime+'.csv',"Download Completed!",wx.OK)
+			dlg = wx.MessageDialog(self,"Please check the results in '"+localtime+".csv'","Download Completed!",wx.OK)
 			dlg.ShowModal()
 			dlg.Destroy()
 
 app=wx.App(False)
-frame = mainFrame(None,"Real Estate Data Scrapper")
+frame = mainFrame(None,"Real Estate Parity Generator")
 app.MainLoop()
