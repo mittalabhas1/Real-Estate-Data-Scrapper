@@ -56,7 +56,7 @@ class mainFrame(wx.Frame):
 		
 	def AboutProgram(self,e):
         # A message dialog box with an OK button. wx.OK is a standard ID in wxWidgets.
-		dlg = wx.MessageDialog(self,"Real Estate Parity Generator", "About", wx.OK)
+		dlg = wx.MessageDialog(self,"Parity Generator", "About", wx.OK)
 		# Show it
 		dlg.ShowModal()
 		# finally destroy it when finished.
@@ -72,7 +72,7 @@ class mainFrame(wx.Frame):
 			self.dirname = dlg.GetDirectory()
 			self.filepath.SetLabel("File: "+self.filename)
 		dlg.Destroy()
-		row_count = sum(1 for row in csv.reader(open(self.dirname+'/'+self.filename)))
+		row_count = sum(1 for row in csv.reader(open(self.dirname+'/'+self.filename)))-1
 		# print row_count
 		self.progressbar.SetRange(row_count)
 		self.progressbar.SetValue(0)
@@ -90,33 +90,38 @@ class mainFrame(wx.Frame):
 			fread = csv.reader(readfile)
 			fwrite = csv.writer(writefile)
 			BROWSER = Browser('phantomjs')
-			val=0 #value for progress bar
+			val = 0 #value for progress bar
 			for row in fread:
 
-				def check_bedroom(bedrooms):
-					if bedrooms != '':
-						if int(bedrooms) > 0:
-							return int(bedrooms)
+				if val == 0:
+					fwrite.writerow(row)
+				else:
+					def check_bedroom(bedrooms):
+						if bedrooms != '':
+							if int(bedrooms) > 0:
+								return int(bedrooms)
+							else:
+								return False
 						else:
 							return False
-					else:
-						return False
 
-				TYPE = row[0].lower()
-				CITY = row[1]
-				LOCALITY = row[2]
-				POSTED_BY = row[4].lower()
-				BEDROOMS = check_bedroom(row[3])
+					TYPE = row[0].lower()
+					POSTED_BY = row[1].lower()
+					CITY = row[2]
+					LOCALITY = row[3]
+					HOUSE_TYPE = row[4].lower()
+					BEDROOMS = check_bedroom(row[5])
+					
+					ac = acres(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
+					# ac = 'N/A'
+					# mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
+					mb = 'N/A'
+
+					fwrite.writerow(row+[ac]+[mb])
+
+					#Update the progress bar
+					self.progressbar.SetValue(val+1)
 				
-				ac = acres(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
-				# mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
-
-				fwrite.writerow(row+[ac])
-				# fwrite.writerow(row+[mb])
-				# fwrite.writerow(row+[ac]+[mb])
-
-				#Update the progress bar
-				self.progressbar.SetValue(val+1)
 				val += 1
 			
 			BROWSER.quit()
@@ -134,7 +139,7 @@ class launch():
 # Initialization Function
 def init():
 	app = wx.App(False)
-	frame = launch(None,"Real Estate Parity Generator")
+	frame = launch(None,"Parity Generator")
 	app.MainLoop()
 
 # Initialization

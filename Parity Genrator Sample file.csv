@@ -1,3 +1,4 @@
-Buy,Bangalore,All,2,owner
-Rent,Bangalore,All,4,builder
-Rent,Bangalore,All,3,dealer
+Listing Type,Contact Person Type,City,Locality,House Type,No. of Bedrooms,99acres,Magicbricks
+Buy,Owner,Bangalore,All,,2
+Rent,Builder,Bangalore,All,,4
+Rent,Dealer,Bangalore,All,,3
