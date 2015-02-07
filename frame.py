@@ -1,7 +1,9 @@
 import wx, os, csv, time
 from build import *
-from script import *
+from ninetynine_acres import *
+from magicBricks import *
 
+# Running MainFrame
 class mainFrame(wx.Frame):
 
 	def __init__(self,parent,title):
@@ -12,21 +14,22 @@ class mainFrame(wx.Frame):
 
 		wx.Frame.__init__(self,parent,title=title,size=(600,200))
 
-		LATEST_BUILD_VERSION = getBuildVersion()
+		CURRENT_BUILD_VERSION = getCurrentBuildVersion()
+		LATEST_BUILD_VERSION = getLatestBuildVersion()
 		
 		self.CreateStatusBar()
-		self.SetStatusText("Current version: v0.1. "+LATEST_BUILD_VERSION+" available to download!")
+		self.SetStatusText("Current version: "+CURRENT_BUILD_VERSION+". "+LATEST_BUILD_VERSION+" available to download!")
 		filemenu = wx.Menu()
 
 		menu_about = filemenu.Append(wx.ID_ABOUT, "&About","About")
-		self.Bind(wx.EVT_MENU, self.OnAbout, menu_about)
+		self.Bind(wx.EVT_MENU, self.AboutProgram, menu_about)
 
 		menu_open = filemenu.Append(wx.ID_OPEN, "&Open File","Open File")
-		self.Bind(wx.EVT_MENU, self.OnOpen, menu_open)
+		self.Bind(wx.EVT_MENU, self.SelectFile, menu_open)
 
 		filemenu.AppendSeparator()
 		menu_exit = filemenu.Append(wx.ID_EXIT,"&Exit"," Exit")
-		self.Bind(wx.EVT_MENU,self.OnExit, menu_exit)
+		self.Bind(wx.EVT_MENU,self.ExitProgram, menu_exit)
 
 		menuBar = wx.MenuBar()
 		# Adding the "filemenu" to the MenuBar
@@ -40,18 +43,18 @@ class mainFrame(wx.Frame):
 		self.filepath = wx.StaticText(panel, label="Choose a file", pos=(40,50))
 
 		self.openButton =wx.Button(panel, wx.ID_OPEN, "Open File", pos=(300,45))
-		self.Bind(wx.EVT_BUTTON, self.OnOpen,self.openButton)
+		self.Bind(wx.EVT_BUTTON, self.SelectFile,self.openButton)
 		self.openButton.SetDefault()
 
 		self.startButton = wx.Button(panel, wx.ID_FILE, "Run Parity Generator", pos=(400,45))
-		self.Bind(wx.EVT_BUTTON, self.OnStart, self.startButton)
+		self.Bind(wx.EVT_BUTTON, self.Generate, self.startButton)
 
 		#Progress Bar
 		self.progressbar = wx.Gauge(panel,wx.ID_STATIC,size=(500,30),pos=(50,100))
 
 		self.Show(True)
 		
-	def OnAbout(self,e):
+	def AboutProgram(self,e):
         # A message dialog box with an OK button. wx.OK is a standard ID in wxWidgets.
 		dlg = wx.MessageDialog(self,"Real Estate Parity Generator", "About", wx.OK)
 		# Show it
@@ -59,10 +62,10 @@ class mainFrame(wx.Frame):
 		# finally destroy it when finished.
 		dlg.Destroy()
 
-	def OnExit(self,e):
+	def ExitProgram(self,e):
 		self.Close(True)
 
-	def OnOpen(self,e):
+	def SelectFile(self,e):
 		dlg = wx.FileDialog(self, "Choose a CSV file to run parity", self.dirname,self.filename, "*.*", wx.OPEN)
 		if dlg.ShowModal() == wx.ID_OK:
 			self.filename = dlg.GetFilename()
@@ -74,7 +77,7 @@ class mainFrame(wx.Frame):
 		self.progressbar.SetRange(row_count)
 		self.progressbar.SetValue(0)
 
-	def OnStart(self,e):
+	def Generate(self,e):
 		if self.filename == "":
 			dlg = wx.MessageDialog(self,"Please choose a valid CSV file to continue","Error",wx.OK)
 			dlg.ShowModal() # Show it
@@ -86,7 +89,7 @@ class mainFrame(wx.Frame):
 			writefile = open(self.dirname+'/'+self.resultFileName,'wb')
 			fread = csv.reader(readfile)
 			fwrite = csv.writer(writefile)
-			BROWSER = Browser()
+			BROWSER = Browser('phantomjs')
 			val=0 #value for progress bar
 			for row in fread:
 
@@ -106,11 +109,11 @@ class mainFrame(wx.Frame):
 				BEDROOMS = check_bedroom(row[3])
 				
 				ac = acres(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
-				mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
+				# mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
 
-				# fwrite.writerow(row+[ac])
+				fwrite.writerow(row+[ac])
 				# fwrite.writerow(row+[mb])
-				fwrite.writerow(row+[ac]+[mb])
+				# fwrite.writerow(row+[ac]+[mb])
 
 				#Update the progress bar
 				self.progressbar.SetValue(val+1)
@@ -123,6 +126,16 @@ class mainFrame(wx.Frame):
 			dlg.ShowModal()
 			dlg.Destroy()
 
-app=wx.App(False)
-frame = mainFrame(None,"Real Estate Parity Generator")
-app.MainLoop()
+# Launches the Program
+class launch():
+	def __init__(self, parent, title):
+		mainFrame(parent, title)
+
+# Initialization Function
+def init():
+	app = wx.App(False)
+	frame = launch(None,"Real Estate Parity Generator")
+	app.MainLoop()
+
+# Initialization
+init()

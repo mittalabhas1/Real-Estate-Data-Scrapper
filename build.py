@@ -1,6 +1,6 @@
 from splinter import Browser
 
-def getBuildVersion():
+def getLatestBuildVersion():
 # RETURNS THE LATEST VERSION OF THE SOFTWARE AVAILABLE TO DOWNLOAD
 
 	# WEBSITE
@@ -21,3 +21,9 @@ def getBuildVersion():
 
 	# RETURN VALUE
 	return version
+
+def getCurrentBuildVersion():
+# RETURNS THE CURRENT VERSION OF THE SOFTWARE
+
+	# RETURN VALUE
+	return 'v0.1'
