@@ -70,8 +70,9 @@ class mainFrame(wx.Frame):
 			self.filepath.SetLabel("File: "+self.filename)
 		dlg.Destroy()
 		row_count = sum(1 for row in csv.reader(open(self.dirname+'/'+self.filename)))
-		self.progressbar.SetValue(0)
+		# print row_count
 		self.progressbar.SetRange(row_count)
+		self.progressbar.SetValue(0)
 
 	def OnStart(self,e):
 		if self.filename == "":
@@ -80,12 +81,12 @@ class mainFrame(wx.Frame):
 			dlg.Destroy() # finally destroy it when finished.
 		else:
 			print self.dirname+'/'+self.filename
-			localtime = time.asctime(time.localtime(time.time()))
+			self.resultFileName = time.asctime(time.localtime(time.time()))+'.csv'
 			readfile = open(self.dirname+'/'+self.filename,'rb')
-			writefile = open(self.dirname+'/'+localtime+'.csv','wb')
+			writefile = open(self.dirname+'/'+self.resultFileName,'wb')
 			fread = csv.reader(readfile)
 			fwrite = csv.writer(writefile)
-			BROWSER = Browser()
+			BROWSER = Browser('phantomjs')
 			val=0 #value for progress bar
 			for row in fread:
 
@@ -105,16 +106,20 @@ class mainFrame(wx.Frame):
 				BEDROOMS = check_bedroom(row[3])
 				
 				ac = acres(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
-				mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
+				# mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
 
-				fwrite.writerow(row+[ac]+[mb])
+				fwrite.writerow(row+[ac])
+				# fwrite.writerow(row+[mb])
+				# fwrite.writerow(row+[ac]+[mb])
 
-				self.progressbar.SetValue(val+1) #Update the progress bar
+				#Update the progress bar
+				self.progressbar.SetValue(val+1)
 				val += 1
 			
 			BROWSER.quit()
 
-			dlg = wx.MessageDialog(self,"Please check the results in '"+localtime+".csv'","Download Completed!",wx.OK)
+			dlg = wx.MessageDialog(self,"Please check the results in '"+self.resultFileName+"'","Download Completed!",wx.OK)
+			print self.dirname+'/'+self.resultFileName 
 			dlg.ShowModal()
 			dlg.Destroy()
 
