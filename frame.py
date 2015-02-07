@@ -86,7 +86,7 @@ class mainFrame(wx.Frame):
 			writefile = open(self.dirname+'/'+self.resultFileName,'wb')
 			fread = csv.reader(readfile)
 			fwrite = csv.writer(writefile)
-			BROWSER = Browser('phantomjs')
+			BROWSER = Browser()
 			val=0 #value for progress bar
 			for row in fread:
 
@@ -106,11 +106,11 @@ class mainFrame(wx.Frame):
 				BEDROOMS = check_bedroom(row[3])
 				
 				ac = acres(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
-				# mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
+				mb = magicBricks(BROWSER, TYPE,CITY,LOCALITY,POSTED_BY,BEDROOMS)
 
-				fwrite.writerow(row+[ac])
+				# fwrite.writerow(row+[ac])
 				# fwrite.writerow(row+[mb])
-				# fwrite.writerow(row+[ac]+[mb])
+				fwrite.writerow(row+[ac]+[mb])
 
 				#Update the progress bar
 				self.progressbar.SetValue(val+1)
